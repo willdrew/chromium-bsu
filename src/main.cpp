@@ -217,16 +217,9 @@ const char* dataLoc(const char* filename, bool doCheck)
 		if(stat(buffer, &sbuf) == 0) return buffer;
 	}
 
-#ifdef PKGDATADIR
-	if( ((strlen(PKGDATADIR)+strlen(filename)) < 254) )
-	{
-		sprintf(buffer, "%s/%s", PKGDATADIR, filename);
-		if(stat(buffer, &sbuf) == 0) return buffer;
-	}
-#endif
-
 #if defined(__linux__)
-	// Relocatable install: <prefix>/bin/chromium-bsu finds <prefix>/share/chromium-bsu,
+	// Relocatable install (checked before PKGDATADIR, so a copied tree always uses its
+	// OWN data even if the build prefix still exists on this machine): <prefix>/bin/chromium-bsu finds <prefix>/share/chromium-bsu,
 	// wherever the tree was copied to - so a build can be moved between machines without
 	// CHROMIUM_BSU_DATA or rebuilding with a different prefix.
 	{
@@ -245,6 +238,15 @@ const char* dataLoc(const char* filename, bool doCheck)
 		}
 	}
 #endif
+
+#ifdef PKGDATADIR
+	if( ((strlen(PKGDATADIR)+strlen(filename)) < 254) )
+	{
+		sprintf(buffer, "%s/%s", PKGDATADIR, filename);
+		if(stat(buffer, &sbuf) == 0) return buffer;
+	}
+#endif
+
 
 #ifdef macintosh
 	#define DATADIR "::data"
