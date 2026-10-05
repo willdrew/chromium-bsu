@@ -26,6 +26,10 @@ public:
 	bool checkErrors();
 
 	bool setVideoMode();
+#if SDL_VERSION_ATLEAST(2,0,0)
+	// Read the size the window system actually gave us and re-project to it.
+	void updateActualSize();
+#endif
 
 	void grabMouse(bool,bool=true);
 

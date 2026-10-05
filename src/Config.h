@@ -40,6 +40,17 @@ public:
 	int		screenW()			{	return m_screenW;		}
 	int		screenH()			{	return m_screenH;		}
 	float	screenA()			{	return m_screenA;		}
+
+	// The window system may not honour the requested size: fullscreen-desktop uses the
+	// native resolution, compositors shrink windows to fit around panels, and HiDPI makes
+	// the drawable larger than the window. Rendering uses the drawable size, mouse input
+	// the window size. Both default to the requested size until a window reports in.
+	int		windowW()			{	return m_windowW;		}
+	int		windowH()			{	return m_windowH;		}
+	int		drawableW()			{	return m_drawableW;	}
+	int		drawableH()			{	return m_drawableH;	}
+	float	drawableA()			{	return m_drawableH > 0 ? (float)m_drawableW/(float)m_drawableH : m_screenA; }
+	void	setActualSize(int winW, int winH, int drawW, int drawH);
 	float	screenFOV()			{	return m_screenFOV;		}
 	float	screenNear()		{	return m_screenNear;	}
 	float	screenFar()			{	return m_screenFar;		}
@@ -109,6 +120,10 @@ private:
 	int 	 m_screenW;
 	int 	 m_screenH;
 	float	 m_screenA;
+	int		 m_windowW;
+	int		 m_windowH;
+	int		 m_drawableW;
+	int		 m_drawableH;
 	float	 m_screenFOV;
 	float	 m_screenNear;
 	float	 m_screenFar;

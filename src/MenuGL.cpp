@@ -967,8 +967,8 @@ void MenuGL::mousePress(MainToolkit::Button but, int xi, int yi)
 	{
 		float x,y;
 		Config *config = Config::instance();
-		x = -2.0*(0.5-(((float)xi)/config->screenW()))* 16.60;
-		y =  2.0*(0.5-(((float)yi)/config->screenH()))* 12.45;
+		x = -2.0*(0.5-(((float)xi)/config->windowW()))* 12.45 * config->drawableA();
+		y =  2.0*(0.5-(((float)yi)/config->windowH()))* 12.45;
 
 		float	p = -y+(1.0+txtHeight*1.5);
 		float	s = txtHeight*2.5;

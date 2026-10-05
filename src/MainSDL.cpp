@@ -328,9 +328,14 @@ bool MainSDL::setVideoMode()
 	//-- Set the flags we want to use for setting the video mode
 #if SDL_VERSION_ATLEAST(2,0,0)
 #define SDL_OPENGL SDL_WINDOW_OPENGL
-#define SDL_FULLSCREEN SDL_WINDOW_FULLSCREEN
+// FULLSCREEN_DESKTOP: native resolution, no video mode switch. A real mode switch is
+// slow, can leave the desktop at the wrong resolution, and misbehaves under Wayland.
+#define SDL_FULLSCREEN SDL_WINDOW_FULLSCREEN_DESKTOP
 #endif
 	video_flags = SDL_OPENGL;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	video_flags |= SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE;
+#endif
 	if(config->fullScreen())
 		video_flags |= SDL_FULLSCREEN;
 
@@ -383,6 +388,7 @@ bool MainSDL::setVideoMode()
 		fprintf(stderr, _("Couldn't create context: %s\n"), SDL_GetError());
 		return false;
 	}
+	updateActualSize();
 #else
 	if ( (glSurface = SDL_SetVideoMode( w, h, bpp, video_flags )) == NULL )
 	{
@@ -408,5 +414,21 @@ bool MainSDL::setVideoMode()
 
 	return true;
 }
+
+#if SDL_VERSION_ATLEAST(2,0,0)
+//----------------------------------------------------------
+void MainSDL::updateActualSize()
+{
+	Global	*game = Global::getInstance();
+	int ww = 0, wh = 0, dw = 0, dh = 0;
+	SDL_GetWindowSize(window, &ww, &wh);
+	SDL_GL_GetDrawableSize(window, &dw, &dh);
+	Config::instance()->setActualSize(ww, wh, dw, dh);
+	if( Config::instance()->debug() )
+		fprintf(stderr, "window %dx%d, drawable %dx%d\n", ww, wh, dw, dh);
+	if(game->mainGL)
+		game->mainGL->reshapeGL(dw, dh);
+}
+#endif
 
 #endif // USE_SDL

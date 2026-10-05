@@ -68,6 +68,8 @@ Config::Config()
 	//-- setup defaults
 	m_screenW		= 800;
 	m_screenH		= 600;
+	m_windowW		= m_drawableW = 800;
+	m_windowH		= m_drawableH = 600;
 	m_screenA		=   1.3333333f;
 	m_screenFOV		=  30.0f;
 	m_screenNear	=  10.0;
@@ -356,6 +358,15 @@ void Config::setScreenSize(int m)
 	m_screenH = screenSizes[m][1];
 
 	m_screenA = (float)m_screenW/(float)m_screenH;
+	setActualSize(m_screenW, m_screenH, m_screenW, m_screenH);
+}
+
+void Config::setActualSize(int winW, int winH, int drawW, int drawH)
+{
+	m_windowW   = winW  > 0 ? winW  : m_screenW;
+	m_windowH   = winH  > 0 ? winH  : m_screenH;
+	m_drawableW = drawW > 0 ? drawW : m_windowW;
+	m_drawableH = drawH > 0 ? drawH : m_windowH;
 }
 
 int Config::approxScreenSize()

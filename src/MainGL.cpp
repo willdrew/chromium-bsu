@@ -445,7 +445,8 @@ void MainGL::drawTextGL(const char *string, float pulse, float scale)
 }
 
 /**
- * incoming width and height are ignored - Config values are always used
+ * incoming width and height are ignored - the drawable size recorded in Config
+ * (what the window system actually gave us) is always used
  */
 //----------------------------------------------------------
 void MainGL::reshapeGL(int , int )
@@ -454,9 +455,9 @@ void MainGL::reshapeGL(int , int )
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective( config->screenFOV(),
-					config->screenA(),
+					config->drawableA(),
 					config->screenNear(),
 					config->screenFar());
 	glMatrixMode(GL_MODELVIEW);
-	glViewport(0, 0, config->screenW(), config->screenH());
+	glViewport(0, 0, config->drawableW(), config->drawableH());
 }

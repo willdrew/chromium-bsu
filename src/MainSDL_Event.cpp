@@ -92,6 +92,9 @@ bool MainSDL::process(SDL_Event *event)
 				input = true; gain = false;
 				activation(shown, mouse, input, gain);
 				break;
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				updateActualSize();
+				break;
 		}
 		break;
 #else
@@ -663,8 +666,8 @@ void MainSDL::grabMouse(bool status, bool warpmouse)
 		SDL_ShowCursor(1);
 	if(!warpmouse)
 		return;
-	xMid = config->screenW()/2;
-	yMid = config->screenH()/2;
+	xMid = config->windowW()/2;
+	yMid = config->windowH()/2;
 #if SDL_VERSION_ATLEAST(2,0,0)
 	SDL_WarpMouseInWindow(window, xMid, yMid);
 #else
