@@ -24,6 +24,8 @@ public:
 	void	drawSuccessGL();
 	void	drawTextGL(const char *string, float pulse, float scale);
 	void	reshapeGL( int w, int h );
+	// Clear the frame: black outside the 4:3 playfield, the current clear colour inside.
+	static void clearFrame();
 
 	const char* findFont();
 	void	loadTextures();

@@ -27,6 +27,7 @@
 #endif
 
 #include "Config.h"
+#include "MainGL.h"
 
 #include "extern.h"
 #include "define.h"
@@ -204,7 +205,7 @@ void MenuGL::drawGL()
 
 //	glClearColor(0.27451, 0.235294, 0.392157, 1.0);
 	//-- Clear buffers
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	MainGL::clearFrame();
 
 	//-- Place camera
 	glLoadIdentity();

@@ -186,11 +186,40 @@ void MainGL::drawGL()
 }
 
 //----------------------------------------------------------
+/**
+ * The playfield is 4:3 (the ground exactly fills a 4:3 view). On wider screens the clear
+ * colour - a slate grey that pulses red, and the whole background at low gfx detail -
+ * showed through as bars at the sides. Clear everything to black, then clear only the
+ * central 4:3 column to the clear colour, so wide screens get black pillarbox bars and
+ * 4:3 screens look exactly as before. Drawing itself is not clipped.
+ */
+void MainGL::clearFrame()
+{
+	Config *config = Config::instance();
+	const int w = config->drawableW();
+	const int h = config->drawableH();
+	const int playW = (h * 4) / 3;
+	if (w <= playW) {
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		return;
+	}
+	GLfloat clear[4];
+	glGetFloatv(GL_COLOR_CLEAR_VALUE, clear);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(clear[0], clear[1], clear[2], clear[3]);
+	glEnable(GL_SCISSOR_TEST);
+	glScissor((w - playW) / 2, 0, playW, h);
+	glClear( GL_COLOR_BUFFER_BIT );
+	glDisable(GL_SCISSOR_TEST);
+}
+
+//----------------------------------------------------------
 void MainGL::drawGameGL()
 {
 	Config *config = Config::instance();
 	//-- Clear buffers
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	clearFrame();
 //	glClear( GL_COLOR_BUFFER_BIT );
 
 	//-- Place camera
@@ -258,7 +287,7 @@ void MainGL::drawDeadGL()
 	game->heroDeath--;
 
 	//-- Clear buffers
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	clearFrame();
 
 	//-- Place camera
 	glLoadIdentity();
@@ -345,7 +374,7 @@ void MainGL::drawSuccessGL()
 	}
 
 	//-- Clear buffers
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	clearFrame();
 
 	//-- Place camera
 	glLoadIdentity();
