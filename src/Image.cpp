@@ -168,7 +168,10 @@ GLuint Image::load(const char *filename, ImageMipMap mipmap, ImageBlend trans, G
 	switch ( mipmap )
 	{
 		case IMG_NOMIPMAPS:
-			glTexImage2D(GL_TEXTURE_2D, 0, image->format->BytesPerPixel, image->w, image->h, 0, format, GL_UNSIGNED_BYTE, image->pixels);
+			// Mipmap everything: the textures are hi-res (4x) and drawn smaller than
+			// their native size on most screens, and without mipmaps a GL_LINEAR
+			// minification of e.g. a 1024px ground tile shimmers while scrolling.
+			gluBuild2DMipmaps(GL_TEXTURE_2D, image->format->BytesPerPixel, image->w, image->h, format, GL_UNSIGNED_BYTE, image->pixels);
 			break;
 		case IMG_SIMPLEMIPMAPS:
 			gluBuild2DMipmaps(GL_TEXTURE_2D, image->format->BytesPerPixel, image->w, image->h, format, GL_UNSIGNED_BYTE, image->pixels);
@@ -182,6 +185,11 @@ GLuint Image::load(const char *filename, ImageMipMap mipmap, ImageBlend trans, G
 
 	glPixelStorei(GL_PACK_ALIGNMENT, pack);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, unpack);
+
+	// Every level now exists, so trilinear filtering is safe: one 4x texture set then
+	// looks right at 1080p and at 4K alike.
+	if( minfilter == GL_LINEAR )
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	SDL_UnlockSurface( image );
 
