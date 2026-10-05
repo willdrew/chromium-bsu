@@ -43,9 +43,10 @@ AC_ARG_WITH(macintosh,
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.2])
 
-# Need OpenGL and GLU for drawing stuff
-AX_CHECK_GL
-AX_CHECK_GLU
+# Need OpenGL and GLU for drawing stuff. pkg-config rather than autoconf-archive's
+# AX_CHECK_GL/GLU, which fail to expand on autoconf >= 2.72 ("argument must not be empty").
+PKG_CHECK_MODULES([GL], [gl])
+PKG_CHECK_MODULES([GLU], [glu])
 
 # Need a recent version of FTGL or GLC for text rendering
 AC_ARG_ENABLE(glc, AS_HELP_STRING([--disable-glc], [do not use GLC]))
@@ -95,7 +96,7 @@ if test "x$enable_sdl" != xno ; then
 fi
 
 if test "x$enable_glut" != xno ; then
-	AX_CHECK_GLUT([no_glut=no], [no_glut=yes])
+	PKG_CHECK_MODULES([GLUT], [glut], [no_glut=no], [no_glut=yes])
 fi
 
 # Need OpenAL or SDL Mixer for sound
