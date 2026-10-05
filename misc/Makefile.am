@@ -6,7 +6,7 @@ icon_DATA = $(top_srcdir)/data/png/hero.png
 icondir = $(datarootdir)/icons/hicolor/64x64/apps
 
 install-data-hook:
-	mv $(icondir)/hero.png $(icondir)/chromium-bsu.png
+	mv $(DESTDIR)$(icondir)/hero.png $(DESTDIR)$(icondir)/chromium-bsu.png
 
 menu_in_files = chromium-bsu.desktop.in
 menu_DATA = $(menu_in_files:.desktop.in=.desktop)
