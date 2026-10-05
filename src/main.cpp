@@ -225,6 +225,27 @@ const char* dataLoc(const char* filename, bool doCheck)
 	}
 #endif
 
+#if defined(__linux__)
+	// Relocatable install: <prefix>/bin/chromium-bsu finds <prefix>/share/chromium-bsu,
+	// wherever the tree was copied to - so a build can be moved between machines without
+	// CHROMIUM_BSU_DATA or rebuilding with a different prefix.
+	{
+		char exe[200];
+		ssize_t n = readlink("/proc/self/exe", exe, sizeof(exe) - 1);
+		if (n > 0) {
+			exe[n] = '\0';
+			char *slash = strrchr(exe, '/');
+			if (slash) {
+				*slash = '\0';
+				if (strlen(exe) + strlen(filename) + 32 < sizeof(buffer)) {
+					sprintf(buffer, "%s/../share/" PACKAGE "/%s", exe, filename);
+					if(stat(buffer, &sbuf) == 0) return buffer;
+				}
+			}
+		}
+	}
+#endif
+
 #ifdef macintosh
 	#define DATADIR "::data"
 #else
